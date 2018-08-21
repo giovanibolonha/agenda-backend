@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Agenda.Application.Mappers;
 using Agenda.Data;
 using Agenda.Repository.Mappers;
+using Agenda.Web.Api.Configurations;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
@@ -31,11 +32,10 @@ namespace Agenda.Web.Api
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-           
-            services.AddMvc();
-
             services.AddDbContext<AgendaContext>(options =>
-                options.UseSqlServer(@"Data Source=.;Initial Catalog=TarefaContext;Integrated Security=True;"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddMvc();
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.Populate(services);

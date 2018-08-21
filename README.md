@@ -1,7 +1,17 @@
-# agenda-backend
+# Lista de Tarefas
 
-Architecture:
-Full architecture with responsibility separation concerns, SOLID and Clean Code
-Domain Driven Design 
-Unit of Work
-Repository and Generic Repository
+### Technologias
+
+- ASP.NET Core 2.0 (with .NET Core)
+- ASP.NET MVC Core
+- ASP.NET WebApi Core
+- Entity Framework Core 2.0
+- Autofac
+- AutoMapper
+
+### Arquitetura
+
+- DDD
+- Unit of Work
+- Repository
+- Unit Test

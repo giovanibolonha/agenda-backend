@@ -35,37 +35,34 @@ namespace Agenda.Web.Api
             services.AddDbContext<AgendaContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddMvc();
+            services.AddControllers();
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.Populate(services);
             containerBuilder.RegisterModule<WebModule>();
             var container = containerBuilder.Build();
 
+            services.AddAutoMapper(typeof(Startup).Assembly);
+
             return new AutofacServiceProvider(container);
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            app.UseMvc();
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
                     .CreateScope())
             {
                 serviceScope.ServiceProvider.GetService<AgendaContext>().Database.Migrate();
             }
 
-            Mapper.Initialize(map =>
-            {
-                map.AddCollectionMappers();
+            app.UseStaticFiles();
 
-                AutoMapperAgendaAppService.RegisterMapping(map);
-                AutoMapperAgendaRepository.RegisterMapping(map);
+            app.UseRouting();
+
+            app.UseCors();
+           
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllers();
             });
         }
     }

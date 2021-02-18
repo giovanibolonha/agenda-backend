@@ -16,13 +16,16 @@ namespace Agenda.Application.Business.Tarefas
     {
         public readonly ITarefaRepository _tarefaRepository;
         public readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
         public CadastroTarefaAppService(
             ITarefaRepository tarefaRepository, 
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            IMapper mapper)
         {
             _tarefaRepository = tarefaRepository;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public void Atualizar(Guid id, TarefaForCreationDTO dto)
@@ -39,9 +42,12 @@ namespace Agenda.Application.Business.Tarefas
 
         public void Cadastrar(TarefaForCreationDTO dto)
         {
-            var model = new Tarefa(dto.Titulo);
+            var model = new Tarefa(dto.Titulo)
+            {
+                Descricao = dto.Descricao
+            };
 
-            model.Descricao = dto.Descricao;
+            model.Concluir();
 
             _tarefaRepository.Add(model);
 
@@ -81,14 +87,14 @@ namespace Agenda.Application.Business.Tarefas
         {
             var model = _tarefaRepository.Get(id);
 
-            return Mapper.Map<TarefaDTO>(model);
+            return _mapper.Map<TarefaDTO>(model);
         }
 
         public IPagedList<TarefaDTO> Paginar(ITarefaParameter parameter)
         {
             var paged = _tarefaRepository.Paged(parameter);
 
-            return  Mapper.Map<PagedList<TarefaDTO>>(paged);
+            return _mapper.Map<PagedList<TarefaDTO>>(paged);
         }
     }
 }

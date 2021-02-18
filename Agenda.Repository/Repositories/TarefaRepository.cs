@@ -18,15 +18,17 @@ namespace Agenda.Repository.Repositories
     public class TarefaRepository : ITarefaRepository
     {
         private readonly AgendaContext _context;
+        private readonly IMapper _mapper;
 
-        public TarefaRepository(AgendaContext context)
+        public TarefaRepository(AgendaContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public void Add(ITarefa model)
         {
-            var data = Mapper.Map<TarefaData>(model);
+            var data = _mapper.Map<TarefaData>(model);
 
             data.OnAuditInsert(DateTime.Now);
 
@@ -46,14 +48,14 @@ namespace Agenda.Repository.Repositories
         {
             var data = GetData(id);
 
-            return Mapper.Map<ITarefa>(data);
+            return _mapper.Map<ITarefa>(data);
         }
 
         public IEnumerable<ITarefa> GetAll()
         {
             return _context.Set<TarefaData>()
                 .Where(x => !x.DeletedDate.HasValue)
-                .ProjectTo<Tarefa>()
+                .ProjectTo<Tarefa>(_mapper.ConfigurationProvider)
                 .ToList();
         }
 
@@ -84,7 +86,7 @@ namespace Agenda.Repository.Repositories
                 .OrderBy(x => x.Titulo)
                 .Skip(parameter.PageSize * (parameter.PageNumber - 1))
                 .Take(parameter.PageSize)
-                .ProjectTo<Tarefa>()
+                .ProjectTo<Tarefa>(_mapper.ConfigurationProvider)
                 .ToList();
 
             return new PagedList<ITarefa>(models, count, parameter.PageNumber, parameter.PageSize);
@@ -108,7 +110,7 @@ namespace Agenda.Repository.Repositories
             var data = _context.Set<TarefaData>()
                 .FirstOrDefault(x => x.Id == id && !x.DeletedDate.HasValue);
 
-            return data != null ? data : throw new NotFoundException("Tarefa não encontrada");
+            return data ?? throw new NotFoundException("Tarefa não encontrada");
         }
     }
 }

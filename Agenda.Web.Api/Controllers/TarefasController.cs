@@ -72,6 +72,7 @@ namespace Agenda.Web.Api.Controllers
             {
                 return BadRequest(ex.Message);
             }
+
         }
 
         [HttpPut("{id}")]
